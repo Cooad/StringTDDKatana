@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Text.RegularExpressions;
 
 namespace StringCalculator
 {
@@ -9,7 +10,22 @@ namespace StringCalculator
         {
             if (string.IsNullOrWhiteSpace(input))
                 return 0;
-            var numbers = input.Split(',').SelectMany(x => x.Split('\n')).Select(double.Parse);
+            var inputLines = input.Split('\n');
+
+            var delimeter = ",";
+            if (inputLines[0].StartsWith("//")) {
+                if (inputLines[0].Contains('['))
+                {
+                    var regex = new Regex(@"(?<=\[).+?(?=\])");
+                    delimeter = regex.Match(inputLines[0]).Value;
+                }
+                else 
+                    delimeter = inputLines[0].Substring(2);
+            }
+
+            var numbers = inputLines.Where((_, i) => delimeter == "," || i > 0).SelectMany(x => x.Split(delimeter))
+                .Select(double.Parse);
+
             double sum = 0;
             foreach (var number in numbers)
             {

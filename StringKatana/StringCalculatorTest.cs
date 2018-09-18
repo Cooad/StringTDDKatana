@@ -65,10 +65,32 @@ namespace StringKatana
 
         [Theory]
         [InlineData(1004, "1,1000,3")]
-        [InlineData(1003,"1,999,3")]
-        [InlineData(4,"1,1001,3")]
+        [InlineData(1003, "1,999,3")]
+        [InlineData(4, "1,1001,3")]
         public void Numbers_above_thousand_are_ignored(double expected, string input)
         {
+            var sum = _stringCalculator.Sum(input);
+            Assert.Equal(expected, sum);
+        }
+
+        [Theory]
+        [InlineData(7, "1#4#2")]
+        [InlineData(5, "1\n2#2")]
+        public void First_line_delimiter(double expected, string inputNumbers)
+        {
+            var delimeter = "//#";
+            var input = delimeter + "\n" + inputNumbers;
+            var sum = _stringCalculator.Sum(input);
+            Assert.Equal(expected,sum);
+        }
+
+        [Theory]
+        [InlineData(7, "1##4##2")]
+        [InlineData(5, "1\n2##2")]
+        public void First_line_multiple_delimeters(double expected, string inputNumbers)
+        {
+            var delimeter = "//[##]";
+            var input = delimeter + "\n" + inputNumbers;
             var sum = _stringCalculator.Sum(input);
             Assert.Equal(expected, sum);
         }
