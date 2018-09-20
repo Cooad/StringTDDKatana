@@ -76,7 +76,7 @@ namespace StringKatana
         [Theory]
         [InlineData(7, "1#4#2")]
         [InlineData(5, "1\n2#2")]
-        public void First_line_delimiter(double expected, string inputNumbers)
+        public void First_line__single_character_delimiter(double expected, string inputNumbers)
         {
             var delimeter = "//#";
             var input = delimeter + "\n" + inputNumbers;
@@ -87,9 +87,20 @@ namespace StringKatana
         [Theory]
         [InlineData(7, "1##4##2")]
         [InlineData(5, "1\n2##2")]
-        public void First_line_multiple_delimeters(double expected, string inputNumbers)
+        public void First_line_multiple_character_delimeter(double expected, string inputNumbers)
         {
             var delimeter = "//[##]";
+            var input = delimeter + "\n" + inputNumbers;
+            var sum = _stringCalculator.Sum(input);
+            Assert.Equal(expected, sum);
+        }
+
+        [Theory]
+        [InlineData(7,"1##4##2")]
+        [InlineData(5,"1#1$1%%1*1")]
+        public void First_line_multiple_delimeters(double expected, string inputNumbers)
+        {
+            var delimeter = "//[#],[##],[$],[%%],[*]";
             var input = delimeter + "\n" + inputNumbers;
             var sum = _stringCalculator.Sum(input);
             Assert.Equal(expected, sum);

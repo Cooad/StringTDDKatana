@@ -1,5 +1,8 @@
 ﻿using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http.Headers;
 using System.Text.RegularExpressions;
 
 namespace StringCalculator
@@ -12,19 +15,10 @@ namespace StringCalculator
                 return 0;
             var inputLines = input.Split('\n');
 
-            var delimeter = ",";
-            if (inputLines[0].StartsWith("//")) {
-                if (inputLines[0].Contains('['))
-                {
-                    var regex = new Regex(@"(?<=\[).+?(?=\])");
-                    delimeter = regex.Match(inputLines[0]).Value;
-                }
-                else 
-                    delimeter = inputLines[0].Substring(2);
-            }
+            var delimeters = FindDelimeters(inputLines[0]);
 
-            var numbers = inputLines.Where((_, i) => delimeter == "," || i > 0).SelectMany(x => x.Split(delimeter))
-                .Select(double.Parse);
+            var stringNumbers = inputLines.Where(line => !line.StartsWith("//")).SelectMany(x => x.SplitMany(delimeters));
+                var numbers = stringNumbers.Select(double.Parse);
 
             double sum = 0;
             foreach (var number in numbers)
@@ -37,6 +31,27 @@ namespace StringCalculator
             }
 
             return sum;
+        }
+
+        private string[] FindDelimeters(string delimeterLine)
+        {
+            if (!delimeterLine.StartsWith("//"))
+                return new[] {","};
+
+            var delimeters = new List<string>();
+
+            if (delimeterLine.Contains('['))
+            {
+                var regex = new Regex(@"(?<=\[).+?(?=\])");
+                foreach (Match match in regex.Matches(delimeterLine))
+                {
+                    delimeters.Add(match.Value);
+                }
+
+                return delimeters.ToArray();
+            }
+
+            return new[] {delimeterLine.Substring(2)};
         }
     }
 }
